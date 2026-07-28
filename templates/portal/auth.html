@@ -1,0 +1,13 @@
+{% extends "portal/base.html" %}{% block title %}{{ title }} · Ariza.uz{% endblock %}
+{% block content %}<section class="auth">
+<a class="brand" href="/"><span>A</span> Ariza.uz</a><div class="auth-card">
+<div class="eyebrow">{% if mode == "admin" %}Boshqaruv paneli{% else %}Fuqarolar portali{% endif %}</div><h1>{{ title }}</h1>
+<p class="muted">{% if mode == "register" %}Murojaatlaringizni qulay yuboring va kuzating.{% elif mode == "admin" %}Faqat vakolatli xodimlar uchun.{% else %}Hisobingizga xavfsiz kiring.{% endif %}</p>
+<form method="post" novalidate>{% csrf_token %}<input type="hidden" name="telegram_init_data" id="tg-data">
+{{ form.non_field_errors }}{% for field in form %}<div class="form-row {% if field.errors %}invalid{% endif %}">
+{% if field.field.widget.input_type == "checkbox" %}<label class="check">{{ field }} <span>{{ field.label }}</span></label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }} *</label><div class="input-wrap">{{ field }}{% if field.field.widget.input_type == "password" %}<button type="button" class="eye" aria-label="Parolni ko‘rsatish">◉</button>{% endif %}</div>{% endif %}
+{% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}</div>{% endfor %}
+<button class="btn primary full" type="submit">{{ title }}</button></form>
+{% if mode == "login" %}<div class="auth-links"><a href="{% url 'password_reset' %}">Parolni unutdingizmi?</a><a href="{% url 'register' %}">Ro‘yxatdan o‘tish</a><a href="{% url 'admin_login' %}">Admin sifatida kirish</a></div>
+{% elif mode == "register" %}<p class="center">Hisobingiz bormi? <a href="{% url 'login' %}">Tizimga kiring</a></p>{% else %}<p class="center"><a href="{% url 'login' %}">Fuqarolar tizimiga qaytish</a></p>{% endif %}
+</div></section>{% endblock %}

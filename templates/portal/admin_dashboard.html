@@ -1,0 +1,10 @@
+{% extends "portal/base.html" %}{% block shell %}admin-shell{% endblock %}{% block content %}
+<aside class="sidebar"><a class="brand" href="{% url 'admin_dashboard' %}"><span>A</span> Ariza.uz</a><nav>
+<a class="active" href="{% url 'admin_dashboard' %}">▦ Dashboard</a><a href="{% url 'admin_dashboard' %}">▤ Barcha murojaatlar</a><a href="{% url 'admin_citizens' %}">♙ Fuqarolar</a>
+{% if request.user.is_superuser %}<a href="/django-admin/portal/maincategory/">Kategoriyalar</a><a href="/django-admin/portal/subcategory/">Kichik kategoriyalar</a><a href="/django-admin/portal/department/">Tashkilotlar</a><a href="/django-admin/portal/routingrule/">Yo‘naltirish qoidalari</a><a href="/django-admin/portal/auditlog/">Audit jurnali</a>{% endif %}
+</nav><a href="{% url 'logout' %}">Tizimdan chiqish</a></aside>
+<main class="admin-main"><header><div><small>Boshqaruv paneli</small><h1>Dashboard</h1></div><b>{{ request.user.username }}</b></header>
+<div class="admin-stats"><div><span>Jami</span><b>{{ counts.total }}</b></div><div><span>Yangi</span><b>{{ counts.new }}</b></div><div><span>Jarayonda</span><b>{{ counts.progress }}</b></div><div><span>Hal qilindi</span><b>{{ counts.resolved }}</b></div></div>
+<section class="table-card"><h2>So‘nggi murojaatlar</h2><div class="table-scroll"><table><thead><tr><th>Raqam</th><th>Fuqaro</th><th>Telefon</th><th>Telegram</th><th>Sarlavha</th><th>Holat</th><th>Sana</th></tr></thead><tbody>
+{% for a in applications %}<tr><td><a href="{% url 'application_detail' a.id %}">{{ a.application_number }}</a></td><td>{{ a.citizen.full_fio }}</td><td><a href="tel:{{ a.citizen.phone }}">{{ a.citizen.phone }}</a></td><td>{% if a.citizen.telegram_username %}<a href="https://t.me/{{ a.citizen.telegram_username|cut:'@' }}" target="_blank" rel="noopener">{{ a.citizen.telegram_username }}</a>{% else %}—{% endif %}</td><td>{{ a.title }}</td><td><span class="badge">{{ a.get_status_display }}</span></td><td>{{ a.submitted_at|date:"d.m.Y" }}</td></tr>{% empty %}<tr><td colspan="7">Murojaatlar yo‘q.</td></tr>{% endfor %}
+</tbody></table></div></section></main>{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "portal/base.html" %}{% block content %}
+<header class="app-header"><a class="brand" href="/"><span>A</span> Ariza.uz</a><a class="icon-btn" href="{% url 'profile' %}">👤</a></header>
+<section class="hero"><p class="muted">Xush kelibsiz</p><h1>{{ request.user.first_name|default:"Fuqaro" }}!</h1><p>Murojaatingizni yuboring va natijasini shu yerda kuzating.</p><a class="btn primary full" href="{% url 'wizard_new' %}">＋ Yangi murojaat yuborish</a></section>
+<h2>Umumiy holat</h2><div class="stats"><div><b>{{ stats.total }}</b><span>Jami murojaatlar</span></div><div><b>{{ stats.progress }}</b><span>Ko‘rib chiqilmoqda</span></div><div><b>{{ stats.resolved }}</b><span>Hal qilindi</span></div><div><b>{{ stats.rejected }}</b><span>Rad etildi</span></div></div>
+{% if drafts %}<div class="section-head"><h2>Xomakilar</h2></div>{% for d in drafts %}<article class="draft-card"><div><b>Tugallanmagan murojaat</b><small>{{ d.updated_at|date:"d.m.Y H:i" }} · {{ d.current_step }}/6-bosqich</small></div><a class="btn small" href="{% url 'wizard' d.id d.current_step %}">Davom etish</a><form method="post" action="{% url 'delete_draft' d.id %}">{% csrf_token %}<button class="link danger">O‘chirish</button></form></article>{% endfor %}{% endif %}
+<nav class="bottom-tabs"><a class="active" href="/">⌂<span>Bosh sahifa</span></a><a href="{% url 'application_list' %}">▤<span>Murojaatlar</span></a><a href="{% url 'wizard_new' %}">＋<span>Yangi</span></a><a href="{% url 'profile' %}">○<span>Profil</span></a></nav>
+{% endblock %}

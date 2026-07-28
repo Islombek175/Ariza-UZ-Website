@@ -1,0 +1,4 @@
+{% extends "portal/base.html" %}{% block content %}<header class="app-header"><a href="/" class="back">←</a><h3>Profil</h3><span></span></header>
+<section class="page"><div class="profile-avatar">{{ request.user.first_name|first }}</div><h1 class="center">{{ request.user.full_fio }}</h1><p class="center muted">{{ request.user.phone }}{% if request.user.telegram_id %} · Telegram ulangan{% endif %}</p>
+<form method="post">{% csrf_token %}{% for field in form %}<div class="form-row"><label>{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<button class="btn primary full">Saqlash</button></form>
+<a class="btn secondary full" href="/django-admin/password_change/">Parolni o‘zgartirish</a><a class="btn danger-outline full" href="{% url 'logout' %}">Tizimdan chiqish</a></section>{% endblock %}

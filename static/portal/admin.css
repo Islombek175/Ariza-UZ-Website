@@ -1,0 +1,4 @@
+.admin-search{display:flex;gap:10px;margin-bottom:18px}
+.admin-search .field{flex:1}
+.citizen-contact{border-left:4px solid var(--primary)}
+@media(max-width:600px){.admin-search{display:grid}}
