@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-before-production")
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
-ALLOWED_HOSTS = [x.strip() for x in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if x.strip()]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"] + [x.strip() for x in os.getenv("ALLOWED_HOSTS", "").split(",") if x.strip()]
 admin_password = os.getenv("DEFAULT_ADMIN_PASSWORD", "admin123")
 if not DEBUG and admin_password == "admin123":
     raise ImproperlyConfigured("DEFAULT_ADMIN_PASSWORD must be changed in production.")
