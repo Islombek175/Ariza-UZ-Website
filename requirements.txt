@@ -2,3 +2,6 @@ Django==5.1.11
 Pillow>=10.0
 python-telegram-bot>=21.0
 gunicorn>=21.2.0
+dj-database-url>=2.2.0
+psycopg[binary]>=3.2.1
+whitenoise[brotli]>=6.7.0

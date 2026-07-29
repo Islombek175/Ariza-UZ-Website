@@ -28,3 +28,43 @@ Development kirishlari:
 - Fuqaro: `+998901234567` / `Citizen123`
 
 **Xavfsizlik:** `admin123` faqat development uchun. Productionda `DEBUG=False`, kuchli `SECRET_KEY`, HTTPS, `SESSION_COOKIE_SECURE=True`, haqiqiy `ALLOWED_HOSTS`, kuchli `DEFAULT_ADMIN_PASSWORD` va Telegram tokenini muhit o‘zgaruvchilarida o‘rnating. Sozlamalar productionda `admin123` bilan ishga tushishni rad etadi. Seed mavjud admin parolini faqat `python manage.py seed_data --reset-admin-password` berilganda yangilaydi.
+
+## Railway deploy
+
+Loyiha Railway uchun tayyor: `railway.json` build paytida `collectstatic`, deploy oldidan `migrate` va `seed_data`, startda esa `gunicorn`ni `$PORT`ga bind qiladi. `health/` endpoint Railway healthcheck uchun ishlatiladi.
+
+1. Railway’da yangi project yarating va GitHub repo orqali deploy qiling yoki lokal papkadan:
+
+```powershell
+railway up
+```
+
+2. Railway project canvas’da `PostgreSQL` service qo‘shing.
+3. App service > Variables > Raw Editor bo‘limiga production qiymatlarini kiriting:
+
+```env
+DEBUG=False
+SECRET_KEY=generate-a-long-random-secret
+DEFAULT_ADMIN_USERNAME=admin
+DEFAULT_ADMIN_PASSWORD=change-this-strong-password
+SESSION_COOKIE_SECURE=True
+SECURE_SSL_REDIRECT=True
+X_FRAME_OPTIONS=DENY
+ALLOWED_HOSTS=${{RAILWAY_PUBLIC_DOMAIN}}
+CSRF_TRUSTED_ORIGINS=https://${{RAILWAY_PUBLIC_DOMAIN}}
+
+PGDATABASE=${{Postgres.PGDATABASE}}
+PGUSER=${{Postgres.PGUSER}}
+PGPASSWORD=${{Postgres.PGPASSWORD}}
+PGHOST=${{Postgres.PGHOST}}
+PGPORT=${{Postgres.PGPORT}}
+
+TELEGRAM_BOT_TOKEN=
+MINI_APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}/
+WEB_CONCURRENCY=2
+```
+
+`DATABASE_URL` yoki `DATABASE_PRIVATE_URL` berilsa, app ularni ham avtomatik ishlatadi.
+
+4. Public URL uchun Railway service > Settings > Networking bo‘limidan domain generate qiling. Telegram Mini App ishlashi uchun `MINI_APP_URL` HTTPS Railway/custom domain bo‘lishi kerak.
+5. Fayl uploadlari kerak bo‘lsa, Railway Volume qo‘shib mount path sifatida `/app/media` tanlang yoki `MEDIA_ROOT`ni volume mount pathga tenglang. Aks holda runtime fayllari deploylar orasida saqlanmasligi mumkin.

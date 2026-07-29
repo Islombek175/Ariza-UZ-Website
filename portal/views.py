@@ -15,6 +15,9 @@ from .models import *
 from .telegram_auth import verify_init_data
 from .notifications import send_telegram
 
+def health(request):
+    return JsonResponse({"status": "ok"})
+
 XORAZM_DISTRICTS = [
     "Bog‘ot tumani", "Gurlan tumani", "Shovot tumani", "Tuproqqala tumani",
     "Urganch shahri", "Urganch tumani", "Xazorasp tumani", "Xiva shahri",
