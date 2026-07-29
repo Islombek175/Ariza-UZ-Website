@@ -52,10 +52,16 @@ class Command(BaseCommand):
         dep,_=Department.objects.get_or_create(name="Xiva shahar murojaatlar markazi",region=region,district=district)
         for c in cats: RoutingRule.objects.get_or_create(main_category=c,region=region,district=district,department=dep,defaults={"priority":10})
         username=env_value("DEFAULT_ADMIN_USERNAME","admin");password=env_value("DEFAULT_ADMIN_PASSWORD","admin123")
+        reset_admin_password = opts["reset_admin_password"] or env_bool("RESET_ADMIN_PASSWORD_ON_SEED", False)
         admin=CitizenAccount.objects.filter(username=username).first()
         if not admin:
             admin=CitizenAccount.objects.create_superuser(username=username,password=password,phone="+998000000001",first_name="Administrator")
-        elif opts["reset_admin_password"]: admin.set_password(password);admin.save(update_fields=["password"])
+            admin_status = "created"
+        elif reset_admin_password:
+            admin.set_password(password);admin.save(update_fields=["password"])
+            admin_status = "password reset"
+        else:
+            admin_status = "exists"
         create_demo_users = opts["demo_users"] or env_bool("CREATE_DEMO_USERS", settings.DEBUG)
         if create_demo_users:
             staff,_=CitizenAccount.objects.get_or_create(phone="+998901111111",defaults={"normalized_phone":"+998901111111","username":"xiva_admin","first_name":"Xiva","last_name":"Operator","is_staff":True,"department":dep})
@@ -63,5 +69,16 @@ class Command(BaseCommand):
             citizen,_=CitizenAccount.objects.get_or_create(phone="+998901234567",defaults={"normalized_phone":"+998901234567","username":"+998901234567","first_name":"Anvar","last_name":"Karimov","middle_name":"Olimovich","telegram_username":"@anvar_sample"})
             if not citizen.has_usable_password(): citizen.set_password("Citizen123");citizen.save()
         self.stdout.write(self.style.SUCCESS("Kategoriyalar, joylashuvlar, tashkilotlar va foydalanuvchilar yaratildi."))
+        self.stdout.write(
+            "Seed summary: "
+            f"categories={MainCategory.objects.count()}, "
+            f"subcategories={SubCategory.objects.count()}, "
+            f"regions={Region.objects.count()}, "
+            f"districts={District.objects.count()}, "
+            f"departments={Department.objects.count()}, "
+            f"routing_rules={RoutingRule.objects.count()}, "
+            f"users={CitizenAccount.objects.count()}, "
+            f"admin={admin_status}"
+        )
         if create_demo_users:
             self.stdout.write(self.style.WARNING("DEVELOPMENT ONLY: admin/admin123. Ishlab chiqarishdan oldin parolni almashtiring!"))

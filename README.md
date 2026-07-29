@@ -27,7 +27,7 @@ Development kirishlari:
 - Bo‘lim xodimi: `+998901111111` / `Operator123`
 - Fuqaro: `+998901234567` / `Citizen123`
 
-**Xavfsizlik:** `admin123` faqat development uchun. Productionda `DEBUG=False`, kuchli `SECRET_KEY`, HTTPS, `SESSION_COOKIE_SECURE=True`, haqiqiy `ALLOWED_HOSTS`, kuchli `DEFAULT_ADMIN_PASSWORD` va Telegram tokenini muhit o‘zgaruvchilarida o‘rnating. Sozlamalar productionda `admin123` bilan ishga tushishni rad etadi. Seed mavjud admin parolini faqat `python manage.py seed_data --reset-admin-password` berilganda yangilaydi.
+**Xavfsizlik:** `admin123` faqat development uchun. Productionda `DEBUG=False`, kuchli `SECRET_KEY`, HTTPS, `SESSION_COOKIE_SECURE=True`, haqiqiy `ALLOWED_HOSTS`, kuchli `DEFAULT_ADMIN_PASSWORD` va Telegram tokenini muhit o‘zgaruvchilarida o‘rnating. Sozlamalar productionda `admin123` bilan ishga tushishni rad etadi. Seed mavjud admin parolini faqat `python manage.py seed_data --reset-admin-password` berilganda yoki `RESET_ADMIN_PASSWORD_ON_SEED=True` qo‘yilganda yangilaydi.
 
 ## Railway deploy
 
@@ -47,6 +47,7 @@ DEBUG=False
 SECRET_KEY=generate-a-long-random-secret
 DEFAULT_ADMIN_USERNAME=admin
 DEFAULT_ADMIN_PASSWORD=change-this-strong-password
+RESET_ADMIN_PASSWORD_ON_SEED=False
 SESSION_COOKIE_SECURE=True
 SECURE_SSL_REDIRECT=True
 SECURE_REDIRECT_EXEMPT=^health/$
