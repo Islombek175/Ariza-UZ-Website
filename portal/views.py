@@ -1,3 +1,4 @@
+import ipaddress
 import json
 from datetime import datetime
 from django.contrib import messages
@@ -24,7 +25,25 @@ XORAZM_DISTRICTS = [
     "Xiva tumani", "Xonqa tumani", "Yangiariq tumani", "Yangibozor tumani",
 ]
 
-def client_ip(request): return request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "")).split(",")[0]
+def client_ip(request):
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    candidates = [part.strip() for part in forwarded_for.split(",") if part.strip()]
+    candidates += [
+        request.META.get("HTTP_X_REAL_IP", "").strip(),
+        request.META.get("REMOTE_ADDR", "").strip(),
+    ]
+    for candidate in candidates:
+        if not candidate or candidate.lower() == "unknown":
+            continue
+        if candidate.startswith("[") and "]" in candidate:
+            candidate = candidate[1:candidate.index("]")]
+        elif candidate.count(":") == 1 and "." in candidate:
+            candidate = candidate.rsplit(":", 1)[0]
+        try:
+            return str(ipaddress.ip_address(candidate))
+        except ValueError:
+            continue
+    return None
 def audit(request, action, target="", details=None):
     AuditLog.objects.create(actor=request.user if request.user.is_authenticated else None, action=action, target=target, details=details or {}, ip_address=client_ip(request) or None)
 

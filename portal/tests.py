@@ -1,7 +1,8 @@
 import json
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from .models import *
+from .views import client_ip
 
 class PortalFlowTests(TestCase):
     @classmethod
@@ -12,6 +13,11 @@ class PortalFlowTests(TestCase):
         cls.user=CitizenAccount.objects.create_user("+998901234567","Citizen123",first_name="Anvar",username="+998901234567")
     def test_phone_normalization_and_login(self):
         self.assertTrue(self.client.login(phone="90 123 45 67",password="Citizen123"))
+    def test_client_ip_skips_malformed_forwarded_values(self):
+        request=RequestFactory().get("/",HTTP_X_FORWARDED_FOR="unknown, 203.0.113.44:1234",REMOTE_ADDR="10.0.0.1")
+        self.assertEqual(client_ip(request),"203.0.113.44")
+        request=RequestFactory().get("/",HTTP_X_FORWARDED_FOR="not-an-ip",REMOTE_ADDR="10.0.0.1")
+        self.assertEqual(client_ip(request),"10.0.0.1")
     def test_registration_logs_citizen_in(self):
         response=self.client.post(reverse("register"),{
             "first_name":"Dilshod","last_name":"Rustamov","middle_name":"Akmalovich",
