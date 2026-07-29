@@ -40,7 +40,14 @@ RAILWAY_PUBLIC_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN")
 if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
 if os.getenv("RAILWAY_ENVIRONMENT"):
-    ALLOWED_HOSTS += [".up.railway.app", ".railway.app"]
+    ALLOWED_HOSTS += [
+        "localhost",
+        "127.0.0.1",
+        "healthcheck.railway.app",
+        ".up.railway.app",
+        ".railway.app",
+    ]
+ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS))
 
 admin_password = env_value("DEFAULT_ADMIN_PASSWORD", "admin123")
 if not DEBUG and admin_password == "admin123":
@@ -126,6 +133,7 @@ if os.getenv("RAILWAY_ENVIRONMENT"):
     CSRF_TRUSTED_ORIGINS += ["https://*.up.railway.app", "https://*.railway.app"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)
+SECURE_REDIRECT_EXEMPT = [r"^health/$"] + env_list("SECURE_REDIRECT_EXEMPT")
 SECURE_HSTS_SECONDS = int(env_value("SECURE_HSTS_SECONDS", "0"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
 SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)

@@ -5,8 +5,8 @@
     "buildCommand": "python manage.py collectstatic --noinput"
   },
   "deploy": {
-    "preDeployCommand": "python manage.py migrate && python manage.py seed_data",
-    "startCommand": "sh -c 'gunicorn arizauz.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers ${WEB_CONCURRENCY:-2} --timeout 120 --access-logfile - --error-logfile -'",
+    "preDeployCommand": "sh railway/predeploy.sh",
+    "startCommand": "sh railway/start.sh",
     "healthcheckPath": "/health/",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",

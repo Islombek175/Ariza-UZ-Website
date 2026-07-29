@@ -31,7 +31,7 @@ Development kirishlari:
 
 ## Railway deploy
 
-Loyiha Railway uchun tayyor: `railway.json` build paytida `collectstatic`, deploy oldidan `migrate` va `seed_data`, startda esa `gunicorn`ni `$PORT`ga bind qiladi. `health/` endpoint Railway healthcheck uchun ishlatiladi.
+Loyiha Railway uchun tayyor: `railway.json` build paytida `collectstatic`, deploy oldidan `migrate` va `seed_data`, startda esa `gunicorn`ni `$PORT`ga bind qiladi. `health/` endpoint Railway healthcheck uchun ishlatiladi. `Procfile` fallback sifatida bor, lekin asosiy sozlama `railway.json` orqali boshqariladi.
 
 1. Railway’da yangi project yarating va GitHub repo orqali deploy qiling yoki lokal papkadan:
 
@@ -49,9 +49,13 @@ DEFAULT_ADMIN_USERNAME=admin
 DEFAULT_ADMIN_PASSWORD=change-this-strong-password
 SESSION_COOKIE_SECURE=True
 SECURE_SSL_REDIRECT=True
+SECURE_REDIRECT_EXEMPT=^health/$
+SECURE_HSTS_SECONDS=0
 X_FRAME_OPTIONS=DENY
 ALLOWED_HOSTS=${{RAILWAY_PUBLIC_DOMAIN}}
 CSRF_TRUSTED_ORIGINS=https://${{RAILWAY_PUBLIC_DOMAIN}}
+CREATE_DEMO_USERS=False
+MEDIA_ROOT=/app/media
 
 PGDATABASE=${{Postgres.PGDATABASE}}
 PGUSER=${{Postgres.PGUSER}}
@@ -68,3 +72,5 @@ WEB_CONCURRENCY=2
 
 4. Public URL uchun Railway service > Settings > Networking bo‘limidan domain generate qiling. Telegram Mini App ishlashi uchun `MINI_APP_URL` HTTPS Railway/custom domain bo‘lishi kerak.
 5. Fayl uploadlari kerak bo‘lsa, Railway Volume qo‘shib mount path sifatida `/app/media` tanlang yoki `MEDIA_ROOT`ni volume mount pathga tenglang. Aks holda runtime fayllari deploylar orasida saqlanmasligi mumkin.
+
+Healthcheck `service unavailable` bo‘lsa, app service deploy logs ichida healthcheckdan oldingi xatoni tekshiring. Eng ko‘p uchraydigan sabablar: `SECRET_KEY` yoki `DEFAULT_ADMIN_PASSWORD` production qiymati qo‘yilmagan, Postgres variables noto‘g‘ri reference qilingan, yoki service `$PORT`da tinglamayapti. Bu repo’da start command `sh railway/start.sh` orqali `$PORT`ni avtomatik ishlatadi.
